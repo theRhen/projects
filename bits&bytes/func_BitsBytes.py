@@ -8,7 +8,7 @@ def bytes_para_bites(bytes):
 
 #ENTRADAS
 bits = int(input("BITS → BYTES: "))
-print(bits, "bits", "=", bits_para_bytes(bits), "bytes")
+print(bits, "bits", "=", bits_para_bytes(bits), "bytes", "\n")
 
 bytes = int(input("BYTES → BITS: "))
 print(bytes, "bytes", "=", bytes_para_bites(bytes), "bits")
