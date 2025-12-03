@@ -1,8 +1,8 @@
 import socket
 import os
 
-HOST = '192.168.56.1' # IP do servidor
-PORT = 20000          # Definindo o IP do servidor      
+HOST = '192.168.56.1' # IP do servidor (IP do HOST rodando o servidor)
+PORT = 20000          # Definindo a porta     
 
 # Criando o socket UDP
 udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -26,12 +26,12 @@ while True:
 
     print(f"Cliente {endereco_cliente} solicitou: {nome_arquivo}")
 
-    # Caminho do arquivo (Pasta + Nome)
-    caminho_arquivo = os.path.join("files", nome_arquivo)
+    # Caminho do arquivo (files/"nome do arquivo dado pelo usuário")
+    caminho_arquivo = os.path.join("files", nome_arquivo) # nome_arquivo = vários bytes convertidos em string
 
-    # Verifica se o arquivo existec
+    # Verifica se o arquivo existe
     if not os.path.exists(caminho_arquivo):
-        print("Arquivo não encontrado.\n")
+        print("Arquivo não encontrado.")
         udp_socket.sendto(b'\x00', endereco_cliente)  # Envia 0 → Arquivo não existe
        
     else: 
@@ -45,12 +45,13 @@ while True:
         tamanho_bytes = tamanho_arquivo.to_bytes(4, byteorder="big")
         udp_socket.sendto(tamanho_bytes, endereco_cliente)
 
-        # Envia o conteudos em blocos de 4090
+        # Envia o conteudos em blocos de 4096
         with open(caminho_arquivo, "rb") as f:
             while True:
                 bloco = f.read(4096)
                 if not bloco:
                     break
-                udp_socket.sendto(bloco, endereco_cliente)
+                else:
+                    udp_socket.sendto(bloco, endereco_cliente)
 
-        print("Arquivo enviado com sucesso.\n")
+        print("Arquivo enviado com sucesso.")
