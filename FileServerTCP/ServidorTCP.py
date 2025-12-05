@@ -9,9 +9,9 @@ tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind((HOST, PORT))
 tcp_socket.listen(1) # Máximo de conexões enfileiradas
 
-print("-----------------------------------------------------")
-print("|Servidor TCP de arquivos iniciado na porta 20000...|")
-print("-----------------------------------------------------\n")
+print("------------------------------------------------------")
+print("|  Servidor TCP de arquivos iniciado na porta 20000  |")
+print("------------------------------------------------------\n")
 
 # Loop principal
 while True:
@@ -26,7 +26,7 @@ while True:
     segundo_data = con.recv(tamanho_nome) # Serviodor espera receber vários Byte (Segundo Datagrama)
     nome_arquivo = segundo_data.decode("utf-8") # Converte vários Bytes recebidos em uma string.
 
-    print(f"Cliente {endereco_cliente} solicitou: {nome_arquivo}")
+    print(f"Cliente: {endereco_cliente} | Solicitou: {nome_arquivo}\n")
 
     # Caminho do arquivo (files/"nome do arquivo dado pelo usuário")
     caminho_arquivo = os.path.join("files", nome_arquivo) # nome_arquivo = vários bytes convertidos em string
@@ -35,9 +35,10 @@ while True:
     if not os.path.exists(caminho_arquivo):
         print("Arquivo não encontrado.\n")
         con.sendall(b'\x00')  # Envia 0 → Arquivo não existe
+        print("------------------------------------------------------\n")
        
     else: 
-        print("Arquivo encontrado. Enviando...\n") 
+        print("Arquivo encontrado. Enviando...") 
         con.sendall(b'\x01') # Envia 1 → arquivo existe
 
         # Obtém tamanho do arquivo
@@ -57,3 +58,4 @@ while True:
                     con.sendall(bloco)
 
         print("Arquivo enviado com sucesso.\n")
+        print("------------------------------------------------------\n")
