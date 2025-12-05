@@ -35,13 +35,13 @@ else: # Arquivo existe
     print("Arquivo existe no SERVIDOR, recebendo...")
 
 # 4 bytes: Tamanho do arquivo
-tamanho_bytes = tcp_socket.recv(4) # recebe 1 byte + endereço do cliente
+tamanho_bytes = tcp_socket.recv(4) # recebe 1 byte
 tamanho = int.from_bytes(tamanho_bytes, "big") # converte bytes em inteiro
 
 # Recebe o conteúdo do arquivo em uma sequência de datagramas de até 4096 bytes
 conteudo = b""
 while len(conteudo) < tamanho:
-    bloco = tcp_socket.recv(4096)  # recebe até 4096 bytes + endereço do cliente
+    bloco = tcp_socket.recv(4096)  # recebe até 4096 bytes
     conteudo = conteudo + bloco  # adiciona os bytes recebidos ao conteúdo total
 
 # Salva o arquivo
