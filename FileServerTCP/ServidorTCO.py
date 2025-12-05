@@ -33,7 +33,7 @@ while True:
 
     # Verifica se o arquivo existe
     if not os.path.exists(caminho_arquivo):
-        print("Arquivo não encontrado.")
+        print("Arquivo não encontrado.\n")
         con.sendall(b'\x00')  # Envia 0 → Arquivo não existe
        
     else: 
@@ -56,4 +56,4 @@ while True:
                 else:
                     con.sendall(bloco)
 
-        print("Arquivo enviado com sucesso.")
+        print("Arquivo enviado com sucesso.\n")
