@@ -1,4 +1,5 @@
 import socket
+import os
 
 HOST = '192.168.56.1' # IP do cliente (IP do HOST cliente)
 PORT = 20000          # Definindo a porta
@@ -45,7 +46,7 @@ while len(conteudo) < tamanho:
     conteudo = conteudo + bloco  # adiciona os bytes recebidos ao conteúdo total
 
 # Salva o arquivo
-with open(nome_file, "wb") as f: # 
+with open(os.path.join("cliente","dowloads", nome_file), "wb") as f: # with open(nome_file, "wb") as f:
     f.write(conteudo)
 
 print(f"Arquivo '{nome_file}' salvo com sucesso!")
