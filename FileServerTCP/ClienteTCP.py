@@ -9,7 +9,7 @@ tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.connect((HOST, PORT))
 
 # Entrada
-nome_file = input("Nome do arquivo sendo solicitado (ex: exemplo.txt): ")
+nome_file = input("Nome do arquivo (ex: exemplo.txt): ")
 print()
 nome_bytes = nome_file.encode('utf-8') # Converte o nome para bytes (UTF-8) (ex: exemplo.txt ⭢ b'exemplo.txt')
 tamanho_file = len(nome_bytes) # Calcula o tamanho em bytes "Percorre cada caracter" (ex: exemplo.txt ⭢ 11)
@@ -24,7 +24,7 @@ nome_to_bytes = nome_bytes # Segundo Datagrama (Nome do arquivo sendo solicitado
 tcp_socket.sendall(nome_to_bytes) # Enviando Segundo Datagrama
 print(f"[OK] Segundo datagrama enviado: nome = {nome_file}\n")
 
-resposta = tcp_socket.recv(1) # recebe 1 byte + endereço do cliente
+resposta = tcp_socket.recv(1) # recebe 1 byte
 resposta_bytes = resposta  
 
 # 0 ⭢ Arquivo não existe | 1 ⭢ Conteúdo do arquivo será enviado
