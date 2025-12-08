@@ -4,46 +4,48 @@ import os
 HOST = '192.168.56.1' # IP do cliente (IP do HOST cliente)
 PORT = 20000          # Definindo a porta
 
-# Criando o socket UDP
+# Criando o socket TCP
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-tcp_socket.connect((HOST, PORT))
+tcp_socket.connect((HOST, PORT)) # Ligando o socket a porta
 
 # Entrada
-nome_file = input("Nome do arquivo (ex: exemplo.txt): ")
+nome_file = input("Nome do arquivo (ex: exemplo.txt): ") # STRING (Nome do arquivo sendo solicitado)
 print()
-nome_bytes = nome_file.encode('utf-8') # Converte o nome para bytes (UTF-8) (ex: exemplo.txt ⭢ b'exemplo.txt')
-tamanho_file = len(nome_bytes) # Calcula o tamanho em bytes "Percorre cada caracter" (ex: exemplo.txt ⭢ 11)
 
-# Datagrama 1
-tamanho_to_byte = tamanho_file.to_bytes(1, "big") # Primeiro Datagrama (Tamanho do nome do arquivo ⭢ 1 Byte)
-tcp_socket.sendall(tamanho_to_byte) # Enviando Primeiro Datagrama
+# Converte o nome do arquivo para bytes
+nome_bytes = nome_file.encode('utf-8') # BYTES (Bytes ⭠ String) (ex: exemplo.txt ⭢ b'exemplo.txt')
+# Calcula o tamanho do nome em bytes "Percorre cada caracter"
+tamanho_file = len(nome_bytes) # INTEIRO (Inteiro ⭠ Bytes) (ex: exemplo.txt ⭢ 11)
+
+# Datagrama 1 (Tamanho do nome do arquivo 1 BYTE)
+tamanho_to_byte = tamanho_file.to_bytes(1, "big") # BYTES (1 Byte ⭠ Inteiro) (Tamanho do nome do arquivo ⭢ 1 Byte)
+tcp_socket.sendall(tamanho_to_byte) # CLIENTE ENVIANDO Primeiro Datagrama
 print(f"[OK] Primeiro datagrama enviado: tamanho = {tamanho_file} byte(s)")
 
-# Datagrama 2
-nome_to_bytes = nome_bytes # Segundo Datagrama (Nome do arquivo sendo solicitado.)
-tcp_socket.sendall(nome_to_bytes) # Enviando Segundo Datagrama
+# Datagrama 2 (Nome do arquivo VÁRIOS BYTES)
+nome_to_bytes = nome_bytes # BYTES (Bytes ⭠ Bytes) (Nome do arquivo ⭢ Nova variável)
+tcp_socket.sendall(nome_to_bytes) # CLIENTE ENVIANDO Segundo Datagrama
 print(f"[OK] Segundo datagrama enviado: nome = {nome_file}\n")
 
-resposta = tcp_socket.recv(1) # recebe 1 byte
-resposta_bytes = resposta  
+# 0 ⭢ Arquivo não existe | 1 ⭢ Arquivo existe
+resposta = tcp_socket.recv(1) # CLIENTE RECEBENDO 1 byte (0 ⭢ b'\x00') ou (1 ⭢ b'\x01')
 
-# 0 ⭢ Arquivo não existe | 1 ⭢ Conteúdo do arquivo será enviado
-if resposta == b'\x00': # Arquivo não existe
+if resposta == b'\x00': # Arquivo não existe (b'\x00')
     print("Arquivo não existe no SERVIDOR.")
     tcp_socket.close()
     exit()
-else: # Arquivo existe
+else: # Arquivo existe (b'\x01')
     print("Arquivo existe no SERVIDOR, recebendo...")
 
 # 4 bytes: Tamanho do arquivo
-tamanho_bytes = tcp_socket.recv(4) # recebe 1 byte
-tamanho = int.from_bytes(tamanho_bytes, "big") # converte bytes em inteiro
+tamanho_bytes = tcp_socket.recv(4) # CLIENTE RECEBENDO 4 Bytes
+tamanho = int.from_bytes(tamanho_bytes, "big") # INTEIRO (Inteiro ⭠ Bytes)
 
-# Recebe o conteúdo do arquivo em uma sequência de datagramas de até 4096 bytes
+# Recebe o conteúdo do arquivo em uma sequência de datagramas de até 4096 Bytes
 conteudo = b""
 while len(conteudo) < tamanho:
-    bloco = tcp_socket.recv(4096)  # recebe até 4096 bytes
-    conteudo = conteudo + bloco  # adiciona os bytes recebidos ao conteúdo total
+    bloco = tcp_socket.recv(4096)  # Recebe até 4096 bytes
+    conteudo = conteudo + bloco  # Adiciona os bytes recebidos ao conteúdo total
 
 # Salva o arquivo
 with open(os.path.join("cliente","dowloads", nome_file), "wb") as f: # with open(nome_file, "wb") as f:
