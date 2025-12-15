@@ -1,5 +1,6 @@
 import socket
 import os
+import json
 
 HOST = '192.168.56.1' # IP do cliente (IP do HOST cliente)
 PORT = 20000          # Definindo a porta
@@ -9,13 +10,16 @@ tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.connect((HOST, PORT)) # Ligando o socket a porta
 
 # Entrada da operação
-operacao = int(input("Digite a operação (10 = Download): "))
-operacao_bytes = operacao.to_bytes(1, "big")
-tcp_socket.sendall(operacao_bytes)
+operacao = int(input("Digite a operação (10 = Download - 20 = Listagem): "))
+
+# Datagrama Operação (Número da operação 1 BYTE)
+operacao_to_bytes = operacao.to_bytes(1, "big") # BYTES (Bytes ⭠ Inreiro) (Número inteiro da operação ⭢ 1 Byte)
+tcp_socket.sendall(operacao_to_bytes) # CLIENTE ENVIANDO Datagrama Operação
 print(f"[OK] Operação {operacao} enviada\n")
 
-# Se Operacao == 10 faz requisição de dowload
+# REQUISIÇÃO DE DOWNLOAD (Se Operacao == 10)
 if operacao == 10:
+    #Entrada da requisição
     nome_file = input("Nome do arquivo (ex: exemplo.txt): ")
     print()
     
@@ -25,8 +29,8 @@ if operacao == 10:
     tamanho_file = len(nome_bytes) # INTEIRO (Inteiro ⭠ Bytes) (ex: exemplo.txt ⭢ 11)
 
     # Datagrama 1 (Tamanho do nome do arquivo 1 BYTE)
-    tamanho_to_byte = tamanho_file.to_bytes(1, "big") # BYTES (1 Byte ⭠ Inteiro) (Tamanho do nome do arquivo ⭢ 1 Byte)
-    tcp_socket.sendall(tamanho_to_byte) # CLIENTE ENVIANDO Primeiro Datagrama
+    tamanho_to_bytes = tamanho_file.to_bytes(1, "big") # BYTES (1 Byte ⭠ Inteiro) (Tamanho do nome do arquivo ⭢ 1 Byte)
+    tcp_socket.sendall(tamanho_to_bytes) # CLIENTE ENVIANDO Primeiro Datagrama
     print(f"[OK] Primeiro datagrama enviado: tamanho = {tamanho_file} byte(s)")
 
     # Datagrama 2 (Nome do arquivo VÁRIOS BYTES)
@@ -60,8 +64,32 @@ if operacao == 10:
 
     print(f"Arquivo '{nome_file}' salvo com sucesso!")
     tcp_socket.close()
-    
+
+# REQUISIÇÃO DE LISTAGEM (Se Operacao == 20)
+elif operacao == 20:
+   
+    status = tcp_socket.recv(1) # CLIENTE RECEBE 
+
+    if status == b'\x00':
+        print("Erro ao obter listagem do servidor.")
+    else:
+        # Recebe tamanho do JSON
+        tamanho_bytes = tcp_socket.recv(4)
+        tamanho = int.from_bytes(tamanho_bytes, "big")
+        
+        # Recebe o conteúdo do arquivo em uma sequência de datagramas de até 4096 Bytes
+        dados = b""
+        while len(dados) < tamanho:
+            bloco = tcp_socket.recv(4096)  # Recebe até 4096 bytes
+            dados = dados + bloco  # Adiciona os bytes recebidos ao conteúdo total
+            
+        dados_str = dados.decode("utf-8") # STRING (String ⭠ Bytes)
+        lista = json.loads(dados_str) # LISTA (Lista ⭠ Json(String))
+
+        print("\nArquivos disponíveis no servidor:\n")
+        for arquivo in lista:
+            print(f"- {arquivo['nome']} ({arquivo['tamanho']} bytes)")
 else:
-    print("Operação não implementada.")
-    
+    print("Operação Inválida")
+
 tcp_socket.close()
