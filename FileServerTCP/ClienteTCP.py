@@ -6,8 +6,8 @@ HOST = '192.168.56.1' # IP do cliente (IP do HOST cliente)
 PORT = 20000          # Definindo a porta
 
 # Criando o socket TCP
-tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-tcp_socket.connect((HOST, PORT)) # Ligando o socket a porta
+tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Socket TCP (STREAM)
+tcp_socket.connect((HOST, PORT))                               # Ligando o socket a porta
 
 # Entrada da operação
 operacao = int(input("Digite a operação (10 = Download - 20 = Listagem): "))
@@ -86,10 +86,8 @@ elif operacao == 20:
         dados_str = dados.decode("utf-8") # STRING (String ⭠ Bytes)
         lista = json.loads(dados_str) # LISTA (Lista ⭠ Json(String))
 
-        print("\nArquivos disponíveis no servidor:\n")
+        print("Arquivos disponíveis no servidor:\n")
         for arquivo in lista:
             print(f"- {arquivo['nome']} ({arquivo['tamanho']} bytes)")
-else:
-    print("Operação Inválida")
 
 tcp_socket.close()
