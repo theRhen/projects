@@ -5,7 +5,7 @@ import json
 HOST = '192.168.56.1' # IP do servidor (IP do HOST servidor)
 PORT = 20000          # Definindo a porta     
 
-# Obtém o diretório absoluto onde do codigo
+# Obtém o diretório absoluto do codigo
 BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # Pasta onde o código esta rodando
 FILES_DIR = os.path.join(BASE_DIR, "files")           # Pasta "files" dentro da pasta onde o código esta rodando
 
@@ -78,11 +78,11 @@ while True:
 
         lista_arquivos = []
 
-        for nome in os.listdir(FILES_DIR):
-            caminho = os.path.join(FILES_DIR, nome)
+        for nome in os.listdir(FILES_DIR): # Retorna todos os nomes de arquivos dentro de FILES_DIR
+            caminho = os.path.join(FILES_DIR, nome) # Caminho completo do arquivo
 
             if os.path.isfile(caminho):
-                tamanho = os.path.getsize(caminho)
+                tamanho = os.path.getsize(caminho) # BYTES (Bytes ⭠ String)
                 lista_arquivos.append({
                     "nome": nome,
                     "tamanho": tamanho
