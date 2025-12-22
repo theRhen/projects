@@ -39,7 +39,7 @@ if operacao == 10:
     print(f"[OK] Segundo datagrama enviado: nome = {nome_file}\n")
 
     # 0 ⭢ Arquivo não existe | 1 ⭢ Arquivo existe
-    resposta = tcp_socket.recv(1) # CLIENTE RECEBENDO 1 byte (0 ⭢ b'\x00') ou (1 ⭢ b'\x01')
+    resposta = tcp_socket.recv(1) # CLIENTE RECEBENDO 1 Byte (0 ⭢ b'\x00') ou (1 ⭢ b'\x01')
 
     if resposta == b'\x00': # Arquivo não existe (b'\x00')
         print("Arquivo não existe no SERVIDOR.")
@@ -67,8 +67,8 @@ if operacao == 10:
 
 # REQUISIÇÃO DE LISTAGEM (Se Operacao == 20)
 elif operacao == 20:
-   
-    status = tcp_socket.recv(1) # CLIENTE RECEBE 
+    # 0 ⭢ Pasta não existe | 1 ⭢ Patsa existe
+    status = tcp_socket.recv(1) # CLIENTE RECEBENDO 1 Byte (0 ⭢ b'\x00') ou (1 ⭢ b'\x01')
 
     if status == b'\x00':
         print("Erro ao obter listagem do servidor.")
